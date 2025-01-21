@@ -58,6 +58,8 @@ def extract_ticket_data(pdf_path):
             "WY": "Oman Air",
             "OD": "Malindo Air",
             "CX": "Cathay Pacific Airways",
+            "UK": "Vistara",
+
 
 
             # Add more airline codes and names as needed
@@ -87,8 +89,19 @@ def extract_ticket_data(pdf_path):
         departure_date = departure_date_match.group(2) if departure_date_match else ""
 
         # Extract Return Date
-        return_date_match = re.search(r"Guangzhou\s*\(CAN\)[\s\S]*?\d{2}:\d{2}\s+Fri,\s+(\d{1,2}\s+\w+\s+\d{4})", text)
-        return_date = return_date_match.group(1) if return_date_match else ""
+        return_date_match = re.findall(r"\((\w+)\)[\s\S]*?\d{2}:\d{2}\s+\w{3},\s+(\d{1,2}\s+\w+\s+\d{4})", text)
+        return_date = return_date_match[1][1] if len(return_date_match) > 1 else "Return date not found"
+
+
+
+        # Extract Ticket Route
+        route_match = re.search(r"Your round trip .*?\((\w+)\)\s*-\s*.*?\(-?\s*(\w+)\)", text)
+        if route_match:
+            departure_code = route_match.group(1)  # First airport code (e.g., DAC)
+            destination_code = route_match.group(2)  # Second airport code (e.g., CAN)
+            ticket_route = f"{departure_code}/{destination_code}/{departure_code}"
+        else:
+            ticket_route = "Route not found"
 
         data = {
             "PNR": re.search(r"PNR:\s+\w+-(\w+)", text).group(1) if re.search(r"PNR:\s+\w+-(\w+)", text) else "",
@@ -98,7 +111,8 @@ def extract_ticket_data(pdf_path):
             "Return Date": return_date,
             "Ticket Issue Date": re.search(r"Issued Date:\s+(\d{2}/\d{2}/\d{4})", text).group(1) if re.search(r"Issued Date:\s+(\d{2}/\d{2}/\d{4})", text) else "",
             "Ticket Number": re.search(r"Tickets Number\s*\n\s*[^\n]+\s+(\d+)", text).group(1) if re.search(r"Tickets Number\s*\n\s*[^\n]+\s+(\d+)", text) else "",
-            
+            "Ticket Route": ticket_route,
+
         }
 
         return data
@@ -113,5 +127,5 @@ if __name__ == "__main__":
 
     pdf_path = sys.argv[1]
     extracted_data = extract_ticket_data(pdf_path)
-    print(json.dumps(extracted_data))
+    print(json.dumps(extracted_data, indent=4))
     

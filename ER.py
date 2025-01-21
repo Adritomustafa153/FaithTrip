@@ -12,8 +12,8 @@ def extract_ticket_route(pdf_path):
         #print(text)
 
         # Regex for extracting the route
-        route_match = re.search(r"Your round trip .*?\((\w+)\)\s*-\s*\(?[\s\S]*?(\w+)\)?.*?\((\w+)\)", text)
-        print("Regex Match Debug:", route_match)  # Debugging regex match
+        route_match = re.search(r"Your round trip .*?\((\w+)\)\s*-\s*.*?\(-?\s*(\w+)\)", text)
+        #print("Regex Match Debug:", route_match)  # Debugging regex match
 
         if route_match:
             departure_code = route_match.group(1)  # First airport code (e.g., DAC)

@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Invoice</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f9;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 20px;
+            background: #ffffff;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+        }
+
+        h1, h2, h3, h4 {
+            text-align: center;
+            margin: 0;
+            padding: 10px 0;
+        }
+
+        .header,
+        .footer {
+            text-align: center;
+            padding: 10px 0;
+        }
+
+        .details,
+        .invoice-table {
+            margin: 20px 0;
+        }
+
+        .details .info {
+            margin-bottom: 10px;
+            line-height: 1.6;
+        }
+
+        .invoice-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .invoice-table th, 
+        .invoice-table td {
+            border: 1px solid #ccc;
+            padding: 8px;
+            text-align: center;
+        }
+
+        .invoice-table th {
+            background-color: #f4f4f4;
+        }
+
+        .qr-code {
+            text-align: center;
+            margin: 20px 0;
+        }
+
+        .actions {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .actions button {
+            padding: 10px 20px;
+            margin: 0 10px;
+            border: none;
+            border-radius: 5px;
+            background-color: #007bff;
+            color: white;
+            cursor: pointer;
+        }
+
+        .actions button:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <div class="container" id="invoice">
+        <div class="header">
+            <h1>FAITH TRAVELS AND TOURS LTD</h1>
+            <p>Abedin Tower, 35 Kamal Ataturk Avenue, Banani, Dhaka 1213</p>
+            <p>Email: director@faithtrip.net | Phone: +8801617845236, 01896459495</p>
+        </div>
+
+        <div class="details">
+            <div class="info">
+                <strong>Client Name:</strong> <span id="client-name">Paramount Textile Limited</span><br>
+                <strong>Address:</strong> <span id="client-address">House 113 Dhaka Road, Dhaka, Dhaka 1209</span><br>
+                <strong>Date:</strong> <span id="invoice-date">12/2/2024</span><br>
+                <strong>Invoice No.:</strong> <span id="invoice-no">PTL.DEC1201</span>
+            </div>
+        </div>
+
+        <table class="invoice-table">
+            <thead>
+                <tr>
+                    <th>No.</th>
+                    <th>Name of Passenger</th>
+                    <th>Class of Travel</th>
+                    <th>Sector</th>
+                    <th>Airline Name</th>
+                    <th>Flight Date</th>
+                    <th>Ticket No</th>
+                    <th>PNR</th>
+                    <th>Issue Date</th>
+                    <th>Amount (Tk)</th>
+                </tr>
+            </thead>
+            <tbody id="ticket-data">
+                <!-- Ticket data will be inserted dynamically -->
+            </tbody>
+        </table>
+
+        <div class="qr-code">
+            <canvas id="qr-code"></canvas>
+        </div>
+
+        <div class="footer">
+            <h3>Thank you for choosing Faith Travels & Tours Ltd</h3>
+        </div>
+    </div>
+
+    <div class="actions">
+        <button onclick="generatePDF()">Download Invoice</button>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/jspdf"></script>
+    <script src="https://cdn.jsdelivr.net/npm/qrcode/build/qrcode.min.js"></script>
+    <script>
+        // Fetch ticket data from the server
+        fetch('get_ticket_data.php')
+            .then(response => response.json())
+            .then(data => {
+                const ticketDataElement = document.getElementById('ticket-data');
+                ticketDataElement.innerHTML = data.tickets.map((ticket, index) => `
+                    <tr>
+                        <td>${index + 1}</td>
+                        <td>${ticket.passenger_name}</td>
+                        <td>${ticket.class_of_travel}</td>
+                        <td>${ticket.sector}</td>
+                        <td>${ticket.airline_name}</td>
+                        <td>${ticket.flight_date}</td>
+                        <td>${ticket.ticket_no}</td>
+                        <td>${ticket.pnr}</td>
+                        <td>${ticket.issue_date}</td>
+                        <td>${ticket.amount}</td>
+                    </tr>
+                `).join('');
+
+                // Generate QR Code
+                QRCode.toCanvas(document.getElementById('qr-code'), 'portal.faithtrip.net' + data.invoice_no, {
+                    width: 150
+                });
+            });
+
+        // Generate PDF
+        function generatePDF() {
+            const doc = new jsPDF();
+            const element = document.getElementById('invoice');
+            doc.html(element, {
+                callback: function (doc) {
+                    doc.save('invoice.pdf');
+                },
+                x: 10,
+                y: 10
+            });
+        }
+    </script>
+</body>
+</html>

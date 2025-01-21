@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ticket Dashboard</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f9;
+            color: #333;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #ffffff;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 20px;
+            color: #444;
+        }
+
+        .button-container {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 30px;
+        }
+
+        .btn {
+            padding: 15px 20px;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+        }
+
+        .btn-generate {
+            background-color: #4caf50;
+            color: #fff;
+        }
+
+        .btn-update {
+            background-color: #007bff;
+            color: #fff;
+        }
+
+        .btn-email {
+            background-color: #ff5722;
+            color: #fff;
+        }
+
+        .btn:hover {
+            transform: scale(1.05);
+        }
+
+        .btn-generate:hover {
+            background-color: #45a049;
+        }
+
+        .btn-update:hover {
+            background-color: #0056b3;
+        }
+
+        .btn-email:hover {
+            background-color: #e64a19;
+        }
+
+        .message {
+            margin-top: 20px;
+            padding: 10px;
+            font-size: 14px;
+            color: #444;
+            background: #e7f3fe;
+            border-left: 6px solid #2196f3;
+            display: none;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Ticket Dashboard</h1>
+        <div class="button-container">
+            <button class="btn btn-generate" onclick="handleAction('generateInvoice')">Generate Invoice</button>
+            <button class="btn btn-update" onclick="handleAction('updateSpreadsheet')">Update in Spreadsheet</button>
+            <button class="btn btn-email" onclick="handleAction('sendEmail')">Send Email</button>
+        </div>
+        <div id="message" class="message"></div>
+    </div>
+
+    <script>
+        function handleAction(action) {
+            const messageDiv = document.getElementById('message');
+            messageDiv.style.display = 'none';
+
+            fetch(`dashboard.php?action=${action}`, {
+                method: 'GET',
+            })
+                .then((response) => response.json())
+                .then((data) => {
+                    messageDiv.style.display = 'block';
+                    messageDiv.textContent = data.message || 'Action completed successfully!';
+                })
+                .catch((error) => {
+                    messageDiv.style.display = 'block';
+                    messageDiv.textContent = 'An error occurred: ' + error.message;
+                });
+        }
+    </script>
+</body>
+</html>

@@ -12,13 +12,13 @@ if ($conn->connect_error) {
 }
 
 // Fetch Passengers Information
-$sql = "SELECT id, full_name FROM passengers";
+$sql = "SELECT first_name FROM users";
 $result = $conn->query($sql);
 
-$passengers = [];
+$users = [];
 if ($result->num_rows > 0) {
     while ($row = $result->fetch_assoc()) {
-        $passengers[] = $row;
+        $users[] = $row;
     }
 }
 
@@ -37,12 +37,12 @@ $conn->close();
     <h1>Passenger Information</h1>
 
     <form action="upload.php" method="POST" enctype="multipart/form-data">
-        <label for="passenger">Select Passenger:</label>
+        <label for="passenger">Sales Person:</label>
         <select name="passenger" id="passenger" required>
-            <option value="">-- Select Passenger --</option>
-            <?php foreach ($passengers as $passenger): ?>
-                <option value="<?php echo $passenger['id']; ?>">
-                    <?php echo $passenger['full_name']; ?>
+            <option value="">-- Person --</option>
+            <?php foreach ($users as $user): ?>
+                <option value="<?php echo htmlspecialchars($user['first_name']); ?>">
+                <?php echo htmlspecialchars($user['first_name']); ?>
                 </option>
             <?php endforeach; ?>
         </select>
