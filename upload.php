@@ -65,11 +65,11 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
             // Save to Database
             $stmt = $conn->prepare(
-                "INSERT INTO tickets (pnr, passenger_name, airline_name, departure_date, return_date, ticket_issue_date, ticket_number, price, Sales_Person) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
+                "INSERT INTO tickets (pnr, passenger_name, airline_name, departure_date, return_date, ticket_issue_date, route, ticket_number, price, Sales_Person) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
             );
 
             $stmt->bind_param(
-                "sssssssss",
+                "ssssssssss",
                 $data['PNR'],
                 $data['Passenger Name'],
                 $data['Airline Name'],
@@ -79,6 +79,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 #$data['Return Date'],
                 #$data['Ticket Issue Date'],
                 $issueDate,
+                $data['Ticket Route'],
                 $data['Ticket Number'],
                 $ticketPrice,
                 $passengerId
